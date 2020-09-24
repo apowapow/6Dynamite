@@ -1,7 +1,6 @@
-from game import DynamiteGame, DynamiteState, MOVES
+from game import DynamiteGame, DynamiteState
 from bot import PowerBot
-
-EXIT = "E"
+from states import MOVES, EXIT
 
 
 def main():
@@ -10,13 +9,10 @@ def main():
     game = DynamiteGame(state=state, bot=bot)
 
     while True:
-        try:
-            console_prompt_pick_move(game, state, bot)
-        except Exception as e:
-            print("Error: {0}".format(str(e)))
+        console_prompt(game, state, bot)
 
 
-def console_prompt_pick_move(game, state, bot):
+def console_prompt(game, state, bot):
     print("Select a move:")
     print("  (R)ock")
     print("  (P)aper")
@@ -28,12 +24,14 @@ def console_prompt_pick_move(game, state, bot):
     option = get_str_input("> ", 1, 1)
 
     if option == EXIT:
-        game.finish()
         exit()
 
     elif option in MOVES:
-        game.user_move(move=option)
-        # todo
+        finished = game.user_move(move=option)
+        game.print_scores()
+
+        if finished:
+            exit()
 
     else:
         print("Invalid move {0}".format(option))
