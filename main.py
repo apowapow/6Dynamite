@@ -11,8 +11,9 @@ def main():
     game = DynamiteGame(bot=bot, points_max=points_max, rounds_max=rounds_max)
 
     print("DYNAMITE")
-    print(" Max Points: {0}".format(points_max))
-    print(" Max Rounds: {0}".format(rounds_max))
+    print("  Max Points: {0}".format(points_max))
+    print("  Max Rounds: {0}".format(rounds_max))
+    print("  Chosen Bot: {0}".format(bot.__class__.__name__))
     print()
 
     while True:
