@@ -37,7 +37,7 @@ class PowerBot:
 
         # update bot models
         self._process_gamestate(gamestate)
-        self._print_statistics()
+        #self._print_statistics()
 
         # select winning move based on p2 moves of highest frequency
         # e.g. if p2 often chooses rock, then choose paper, etc.
