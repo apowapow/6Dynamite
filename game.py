@@ -3,15 +3,14 @@ from states import *
 
 class DynamiteGame:
 
-    def __init__(self, state, bot, points_max=POINTS_MAX, rounds_max=ROUNDS_MAX):
-        self._state = state
+    def __init__(self, bot, points_max=POINTS_MAX, rounds_max=ROUNDS_MAX):
         self._bot = bot
+        self._rounds = {ROUNDS: []}
 
         self._points_bot = 0
         self._points_user = 0
+        self._dynamite_user = 100
         self._points_accum = 1
-
-        self._dynamite_user = DYNAMITE_MAX
 
         self._points_max = points_max
         self._rounds_max = rounds_max
@@ -26,7 +25,7 @@ class DynamiteGame:
 
                 self._dynamite_user -= 1
 
-            move_bot = self._bot.make_move(gamestate=self._state.get_game_state())
+            move_bot = self._bot.make_move(gamestate=self._rounds)
             winner = self._get_winner(move_bot=move_bot, move_user=move_user)
 
             if winner is None:  # a draw
@@ -43,33 +42,23 @@ class DynamiteGame:
 
                 self._points_accum = 1  # reset points
 
-            self._state.add_round(move_bot=move_bot, move_user=move_user)
+            self.add_round(move_bot=move_bot, move_user=move_user)
+            print("Round {0}/{1}:".format(len(self._rounds[ROUNDS]), self._rounds_max))
+            print("{0} (bot):  move={1}, points={2}, dynamite={3}".format(
+                P1_BOT, move_bot, self._points_bot, self._bot.get_dynamite_left()))
+            print("{0} (user): move={1}, points={2}, dynamite={3}".format(
+                P2_USER, move_user, self._points_user, self._dynamite_user))
+            print("> Winner = {0}".format(winner))
+
             return self.game_finished()
 
         else:
             return True  # game has finished
 
-    def print_scores(self) -> None:
-        print("Bot: points={0}, dynamite={1}".format(self._points_bot, self._bot.get_dynamite_left()))
-        print("User: points={0}, dynamite{1}".format(self._points_user, self._dynamite_user))
-
     def game_finished(self) -> bool:
-        return self._state.completed_rounds() >= self._rounds_max or \
+        return len(self._rounds[ROUNDS]) >= self._rounds_max or \
                self._points_bot >= self._points_max or \
                self._points_user >= self._points_max
-
-    def _get_winner(self, move_bot, move_user) -> str:
-        if move_bot == move_user:
-            return None
-
-        # todo
-
-
-class DynamiteState:
-
-    def __init__(self):
-        self._rounds = {ROUNDS: []}
-        self._dynamite = DYNAMITE_MAX
 
     def add_round(self, move_bot: str, move_user: str) -> None:
         self._rounds[ROUNDS].append({
@@ -77,14 +66,15 @@ class DynamiteState:
             P2_USER: move_user
         })
 
-    def completed_rounds(self) -> int:
-        return len(self._rounds[ROUNDS])
+    def _get_winner(self, move_bot, move_user) -> str:
+        if move_bot == move_user:
+            return None
 
-    def get_dynamite_left(self) -> int:
-        return self._dynamite
+        if (move_bot == DYNAMITE and move_user != WATER_BALLOON) or \
+                (move_bot == WATER_BALLOON and move_user == DYNAMITE) or \
+                (move_bot == ROCK and move_user == SCISSORS) or \
+                (move_bot == SCISSORS and move_user == PAPER) or \
+                (move_bot == PAPER and move_user == ROCK):
+            return P1_BOT
 
-    def get_game_state(self) -> dict:
-        return self._rounds
-
-    def get_rounds(self) -> list:
-        return self._rounds[ROUNDS]
+        return P2_USER

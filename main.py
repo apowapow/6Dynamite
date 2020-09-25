@@ -1,18 +1,25 @@
-from game import DynamiteGame, DynamiteState
+from game import DynamiteGame
 from bot import PowerBot
-from states import MOVES, EXIT
+from states import *
 
 
 def main():
-    state = DynamiteState
-    bot = PowerBot
-    game = DynamiteGame(state=state, bot=bot)
+    points_max = POINTS_MAX
+    rounds_max = ROUNDS_MAX
+
+    bot = PowerBot()
+    game = DynamiteGame(bot=bot, points_max=points_max, rounds_max=rounds_max)
+
+    print("DYNAMITE")
+    print(" Max Points: {0}".format(points_max))
+    print(" Max Rounds: {0}".format(rounds_max))
+    print()
 
     while True:
-        console_prompt(game, state, bot)
+        console_prompt(game, bot)
 
 
-def console_prompt(game, state, bot):
+def console_prompt(game, bot):
     print("Select a move:")
     print("  (R)ock")
     print("  (P)aper")
@@ -21,21 +28,18 @@ def console_prompt(game, state, bot):
     print("  (W)ater Balloon")
     print("  (E)xit Game")
 
-    option = get_str_input("> ", 1, 1)
+    option = get_str_input("> ", 1, 1).capitalize()
 
+    print()
     if option == EXIT:
         exit()
 
     elif option in MOVES:
-        finished = game.user_move(move=option)
-        game.print_scores()
-
-        if finished:
+        if game.next_round(option):
             exit()
 
     else:
         print("Invalid move {0}".format(option))
-
     print()
 
 

@@ -2,6 +2,7 @@ import random
 
 
 class PowerBot:
+    global random
 
     ROCK = "R"
     PAPER = "P"
