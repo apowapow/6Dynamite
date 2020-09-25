@@ -16,10 +16,10 @@ def main():
     print()
 
     while True:
-        console_prompt(game, bot)
+        console_prompt(game)
 
 
-def console_prompt(game, bot):
+def console_prompt(game):
     print("Select a move:")
     print("  (R)ock")
     print("  (P)aper")

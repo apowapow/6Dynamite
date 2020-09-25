@@ -4,7 +4,7 @@ from states import *
 class DynamiteGame:
 
     def __init__(self, bot, points_max=POINTS_MAX, rounds_max=ROUNDS_MAX):
-        self._bot = bot
+        self.bot = bot
         self._rounds = {ROUNDS: []}
 
         self._points_bot = 0
@@ -25,7 +25,7 @@ class DynamiteGame:
 
                 self._dynamite_user -= 1
 
-            move_bot = self._bot.make_move(gamestate=self._rounds)
+            move_bot = self.bot.make_move(gamestate=self._rounds)
             winner = self._get_winner(move_bot=move_bot, move_user=move_user)
 
             if winner is None:  # a draw
@@ -45,7 +45,7 @@ class DynamiteGame:
             self.add_round(move_bot=move_bot, move_user=move_user)
             print("Round {0}/{1}:".format(len(self._rounds[ROUNDS]), self._rounds_max))
             print("{0} (bot):  move={1}, points={2}, dynamite={3}".format(
-                P1_BOT, move_bot, self._points_bot, self._bot.get_dynamite_left()))
+                P1_BOT, move_bot, self._points_bot, self.bot.get_dynamite_left()))
             print("{0} (user): move={1}, points={2}, dynamite={3}".format(
                 P2_USER, move_user, self._points_user, self._dynamite_user))
             print("> Winner = {0}".format(winner))
@@ -70,11 +70,19 @@ class DynamiteGame:
         if move_bot == move_user:
             return None
 
-        if (move_bot == DYNAMITE and move_user != WATER_BALLOON) or \
-                (move_bot == WATER_BALLOON and move_user == DYNAMITE) or \
-                (move_bot == ROCK and move_user == SCISSORS) or \
-                (move_bot == SCISSORS and move_user == PAPER) or \
-                (move_bot == PAPER and move_user == ROCK):
+        if move_bot == DYNAMITE and move_user != WATER_BALLOON:
+            return P1_BOT
+
+        if move_bot == WATER_BALLOON and move_user == DYNAMITE:
+            return P1_BOT
+
+        if move_bot == ROCK and (move_user == SCISSORS or move_user == WATER_BALLOON):
+            return P1_BOT
+
+        if move_bot == SCISSORS and (move_user == PAPER or move_user == WATER_BALLOON):
+            return P1_BOT
+
+        if move_bot == PAPER and (move_user == ROCK or move_user == WATER_BALLOON):
             return P1_BOT
 
         return P2_USER
